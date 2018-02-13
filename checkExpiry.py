@@ -23,13 +23,12 @@ with open('fileList.dat') as f:
 
 	for domain in content:
 		if (domain not in df.index) or np.isnan(df.at[domain,'Days to expire']):
-		#if (domain not in df.index):
 			try:
 				w = whois.whois(domain)
 
 				if (w.expiration_date and w.status) == None:
-					days_to_expire=999
-					domain_expiration_date=999
+					days_to_expire=np.nan
+					domain_expiration_date=np.nan
 
 				if type(w.expiration_date) == list:
 					w.expiration_date = w.expiration_date[0]
@@ -41,19 +40,21 @@ with open('fileList.dat') as f:
 				days_to_expire = timedelta.days
 
 			except (whois.parser.PywhoisError):
-					days_to_expire=999
-					domain_expiration_date=999
+					days_to_expire=np.nan
+					domain_expiration_date=np.nan
                     
 			#df=df.append({'Domain':domain, 'Days to expire':days_to_expire, 'Expiry Date':domain_expiration_date},ignore_index=True)
 			df=df.append({'Domain':domain, 'Days to expire':days_to_expire, 'Expiry Date':domain_expiration_date}, ignore_index=True)
 			#df['Days to expire'].replace(999,np.nan)
 			#df['Expiry Date'].replace(999,np.nan)
-			df.replace(int('999'),np.nan)
-			df.replace(int('999'),np.nan)
-		else:
-			df['Days to expire']=df['Expiry Date'].apply(calculateDaysToExpire)
+			#df.replace(int('999'),np.nan)
+			#df.replace(int('999'),np.nan)
+		#else:
+	df['Days to expire']=df['Expiry Date'].apply(calculateDaysToExpire)
 		#df.to_csv('out.csv', sep='\t', encoding='utf-8', index_label='Domain')
-	df.to_csv('out.csv', sep='\t', encoding='utf-8',index=False,columns=['Domain','Days to expire',"Expiry Date"])
+	if os.path.exists('out.csv'):
+		os.remove('out.csv')
+	df.to_csv('out.csv', sep='\t', encoding='utf-8',index=False, columns=['Domain','Days to expire',"Expiry Date"])
 
 
 

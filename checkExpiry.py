@@ -27,8 +27,8 @@ with open('fileList.dat') as f:
 				w = whois.whois(domain)
 
 				if (w.expiration_date and w.status) == None:
-					days_to_expire=np.nan
-					domain_expiration_date=np.nan
+					days_to_expire="NA"
+					domain_expiration_date="NA"
 
 				elif type(w.expiration_date) == list:
 					w.expiration_date = w.expiration_date[0]
@@ -41,13 +41,9 @@ with open('fileList.dat') as f:
 					days_to_expire = timedelta.days
 
 			except (whois.parser.PywhoisError):
-					days_to_expire=np.nan
-					domain_expiration_date=np.nan
-			#if domain not in df.index:
+					days_to_expire="NA"
+					domain_expiration_date="NA"
 			df.ix[domain]=[days_to_expire, domain_expiration_date]
 	df=df.reset_index()
-	df['Days to expire']=df['Expiry Date'].apply(calculateDaysToExpire)
+	df['Days to expire']=df['Expiry Date'].apply(lambda x:calculateDaysToExpire(x) if str(x) is not "NA" else x)
 	df.to_csv('out.csv', sep='\t', encoding='utf-8',index=False, columns=['Domain','Days to expire',"Expiry Date"])
-
-
-

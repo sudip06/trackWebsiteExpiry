@@ -8,7 +8,6 @@ import numpy as np
 import os.path
 
 def calculateDaysToExpire(ExpiryDate):
-	print ("expiry date is",ExpiryDate)
 	differenceTime=datetime.strptime(ExpiryDate,'%d/%m/%Y')-datetime.now()
 	return differenceTime.days
 
@@ -47,4 +46,5 @@ with open('fileList.dat') as f:
 			df.ix[domain]=[days_to_expire, domain_expiration_date]
 	df=df.reset_index()
 	df['Days to expire']=df['Expiry Date'].apply(lambda x:calculateDaysToExpire(x) if x!="NA" else x)
+	print (df)
 	df.to_csv('out.csv', sep='\t', encoding='utf-8',index=False, columns=['Domain','Days to expire',"Expiry Date"])
